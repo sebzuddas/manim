@@ -21,6 +21,7 @@ a pull request there.
     animation
     constants
     geometry
+    coordinate_systems
 
 
 Indices and tables
