@@ -5,6 +5,7 @@ import operator as op
 import os
 import random
 import sys
+import attr
 
 from colour import Color
 import numpy as np
@@ -21,30 +22,31 @@ from ..utils.simple_functions import get_parameters
 from ..utils.space_ops import angle_of_vector
 from ..utils.space_ops import get_norm
 from ..utils.space_ops import rotation_matrix
+from ..utils.config_ops import digest_config
 
 
 # TODO: Explain array_attrs
 
+@attr.s(eq=False)
 class Mobject(Container):
     """
     Mathematical Object
     """
-    CONFIG = {
-        "color": WHITE,
-        "name": None,
-        "dim": 3,
-        "target": None,
-        "z_index": 0,
-    }
 
-    def __init__(self, **kwargs):
-        Container.__init__(self, **kwargs)
-        self.submobjects = []
-        self.color = Color(self.color)
+    color = attr.attrib(default=WHITE)
+    name = attr.attrib(default=None)
+    dim = attr.attrib(default=3)
+    target = attr.attrib(default=None)
+    z_index = attr.attrib(default=0)
+    submobjects = attr.attrib(default=[], init=False)
+    updaters = attr.attrib(default=[], init=False)
+    updating_suspended = attr.attrib(default=False, init=False)
+
+    def __attrs_post_init__(self):
+        digest_config(self, {})
         if self.name is None:
             self.name = self.__class__.__name__
-        self.updaters = []
-        self.updating_suspended = False
+        self.color = Color(self.color)
         self.reset_points()
         self.generate_points()
         self.init_colors()
